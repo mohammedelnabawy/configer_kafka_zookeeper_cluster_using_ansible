@@ -1,0 +1,45 @@
+- name: yum-update
+  apt:
+    update_cache: yes
+
+- name: install-java
+  package:
+    name: '{{JAVA_package}}'
+    state: present
+
+- name: Download-kafka
+  ansible.builtin.get_url:
+    url: '{{kafka_url}}'
+    dest: /home/ansible/
+    mode: '0644'
+  register: kafka_installed
+
+- name: tar-file
+  ansible.builtin.unarchive:
+    src: /home/ansible/kafka_2.13-3.4.0.tgz
+    dest: /home/ansible
+    remote_src: yes
+  when: kafka_installed.changed==true
+
+- name: Recursively change ownership of a directory
+  ansible.builtin.file:
+    path: /data/zookeeper
+    state: directory
+    recurse: yes
+    owner: ansible
+    group: ansible
+
+- name: Copy file with owner and permissions
+  ansible.builtin.copy:
+    src: zookeeber_1.properties
+    dest: /home/ansible/kafka_2.13-3.4.0/config/zookeeper.properties
+    owner: ansible
+    group: ansible
+    mode: '0644'
+
+- name: Copy file kafka.rc and exus.service
+  delegate_to: "{{item.server}}"
+  ansible.builtin.shell: echo "{{item.id}}" > /data/zookeeper/myid
+  loop:
+    "{{files}}"
+

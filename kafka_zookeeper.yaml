@@ -1,0 +1,4 @@
+- name: nexus-role
+  hosts: all
+  roles:
+    - nexus
