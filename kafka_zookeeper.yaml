@@ -1,4 +1,4 @@
 - name: nexus-role
   hosts: all
   roles:
-    - nexus
+    - kafka_zookeeper
